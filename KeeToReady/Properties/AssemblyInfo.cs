@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("KeeToReady")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A KeePass plugin for exporting records in ReadySignOn's .rsrz format.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ReadySignOn")]
-[assembly: AssemblyProduct("KeeToReady")]
+[assembly: AssemblyProduct("KeePass Plugin")]
 [assembly: AssemblyCopyright("Copyright © ReadySignOn 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

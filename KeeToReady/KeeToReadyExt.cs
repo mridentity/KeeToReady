@@ -8,7 +8,18 @@ using KeePass.Plugins;
 
 namespace KeeToReady
 {
-    public class KeeToReadyExt : Plugin
+    public sealed class KeeToReadyExt : Plugin
     {
+        private IPluginHost m_host = null;
+
+        public override bool Initialize(IPluginHost host)
+        {
+            m_host = host;
+            return true;
+        }
+
+        public override void Terminate()
+        {
+        }
     }
 }
