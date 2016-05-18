@@ -7,7 +7,7 @@ using KeePass.DataExchange;
 
 namespace KeeToReady
 {
-    internal sealed class Rsrz : FileFormatProvider
+    internal sealed class RsrzProvider : FileFormatProvider
     {
         public override bool SupportsImport { get { return false; } }
         public override bool SupportsExport { get { return true; } }

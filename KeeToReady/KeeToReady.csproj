@@ -51,7 +51,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Rsrz.cs" />
+    <Compile Include="RsrzProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\B16x16_KeePassPlus.png" />

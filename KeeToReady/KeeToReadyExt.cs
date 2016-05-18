@@ -31,7 +31,7 @@ namespace KeeToReady
 
             this.m_host = host;
 
-            provider = new Rsrz();
+            provider = new RsrzProvider();
 
             host.FileFormatPool.Add(provider);
 
