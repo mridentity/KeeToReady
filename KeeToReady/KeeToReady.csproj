@@ -51,6 +51,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="RsrzFile.cs" />
+    <Compile Include="RsrzFile.Write.cs" />
     <Compile Include="RsrzProvider.cs" />
   </ItemGroup>
   <ItemGroup>
