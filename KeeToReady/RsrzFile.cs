@@ -21,6 +21,20 @@ namespace KeeToReady
     }
     public sealed partial class RsrzFile
     {
+        private const int kKeyXoredSaltLength = 32; // This seamingly large (256 bits) salt is necessary given the sensitive text field is directly XORed with the key derived from the master key.
+        private const int kEncryptionRoundForSensitiveFields = 2;   // This is key derivation round for protecting the sensitive text field. Even the smallest number one(1) should be good enough given the direct XORed operation with a long salt.
+
+        private const int kXoredKeySaltLength = 32; // Instead of using a stream cipher, sensitive fields are XORed with a key directly derived from the master password, therefore a unique large salt (256bit) is needed for each field.
+
+        private const int kExportSaltLength = 32;  // 256bits, this is the salt unique to each exported file.
+        private const int kExportKeyLength = 32;   // 256bits, this is the encryption key protecting the exported file.
+
+        // This seemingly huge iteration count is necessary considering the exported
+        // records may be sent via email, SMS or other public communication channels.
+        // The delay associated with it should be acceptable from UX standpoint given
+        // the export function is not frequently triggered by the end user anyway.    
+        private const long kKeyDerivationRoundForExport = 1000000;
+
         private const string ElemDocNode = "KeePassFile";
         private const string ElemMeta = "Meta";
         private const string ElemRoot = "Root";
@@ -123,15 +137,6 @@ namespace KeeToReady
         private const string ElemStringDictExItem = "Item";
 
         private PwDatabase m_pwDatabase; // Not null, see constructor
-
-        private const int  kExportSaltLength = 32;  // 256bits
-        private const int kExportKeyLength = 32;    //256bits
-
-        // This seemingly huge iteration count is necessary given the exported
-        // records may be sent via email, SMS or other public communication channels.
-        // The delay associated with it should be acceptable from UX point of view since
-        // the export function is not a frequently triggered by the end user anyway.    
-        private const long kKeyDerivationRoundForExport = 1000000;
 
         private IStatusLogger m_slLogger = null;
 
