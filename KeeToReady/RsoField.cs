@@ -6,18 +6,16 @@ using System.Threading.Tasks;
 
 namespace KeeToReady
 {
-    public enum FieldType : Int16
+    public enum FieldType
     {
         Username = 0, Password, DoB,
         WebsiteURL, eMailAddress, AccountName, AccountNumber, CardNumber, CVC, PIN, SSN,
         ComputerName, NetworkDomain, ServerHost, IPAddress,
         PostalAddress, PhoneNumber,
         PassportNumber,
-        //Combination, MemberID, PolicyID, RxNumber, SerialNumber, ActivationCode, LicensePlate, VIN,
         Note, GenericText, GenericNumber, GenericDate,
         Gender, Segment, ReadyIdPublicKey, ReadyIdPrivateKey, // These are for identities
         BundleID
-        // Must update count when adding new field types.
     }
 
     public class RsoField

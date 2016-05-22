@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -51,7 +52,9 @@ namespace KeeToReady
                     writerStream = null;
                 }
                 else if (m_format == RsrzFormat.CompressedJsonWithoutEncryption)
-                    writerStream = hashedStream;
+                {
+                    writerStream = new GZipStream(hashedStream, CompressionMode.Compress);
+                }
                 else { Debug.Assert(false); throw new FormatException("RsrzFormat"); }
 
                 m_jsonWriter = new JsonTextWriter(new StreamWriter(writerStream));
@@ -159,6 +162,8 @@ namespace KeeToReady
 
                 List<RsoField> fields = new List<RsoField>();
 
+                int order = 0;
+
                 foreach (KeyValuePair<string, ProtectedString> ps in pe.Strings)
                 {
                     RsoField f = new RsoField();
@@ -178,10 +183,13 @@ namespace KeeToReady
                             f.type = (int)FieldType.Note;
                             break;
                         case "Title":   // This is assigned to the record name.
-                        default:
                             continue;
+                        default:
+                            f.type = (int)FieldType.GenericText;
+                            break;
                     }
 
+                    f.displayOrder = order++;
                     f.stringValue = ps.Value.ReadString();
                     f.label = ps.Key;
                     f.isSensitive = ps.Value.IsProtected ? 0 : 0;   // TODO: need to mark sensitive and protect the field.
