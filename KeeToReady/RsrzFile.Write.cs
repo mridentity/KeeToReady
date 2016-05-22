@@ -1,4 +1,6 @@
-﻿using KeePassLib;
+﻿using KeePass;
+using KeePass.UI;
+using KeePassLib;
 using KeePassLib.Collections;
 using KeePassLib.Cryptography;
 using KeePassLib.Delegates;
@@ -10,12 +12,14 @@ using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Xml;
 
 namespace KeeToReady
@@ -79,8 +83,33 @@ namespace KeeToReady
         }
 
 
+        //http://www.dailycoding.com/posts/convert_image_to_base64_string_and_base64_string_to_image.aspx
+        public string ImageToBase64(Image image, System.Drawing.Imaging.ImageFormat format)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                // Convert Image to byte[]
+                image.Save(ms, format);
+                byte[] imageBytes = ms.ToArray();
 
+                // Convert byte[] to Base64 String
+                string base64String = Convert.ToBase64String(imageBytes);
+                return base64String;
+            }
+        }
 
+        public Image Base64ToImage(string base64String)
+        {
+            // Convert Base64 String to byte[]
+            byte[] imageBytes = Convert.FromBase64String(base64String);
+            MemoryStream ms = new MemoryStream(imageBytes, 0,
+              imageBytes.Length);
+
+            // Convert byte[] to Image
+            ms.Write(imageBytes, 0, imageBytes.Length);
+            Image image = Image.FromStream(ms, true);
+            return image;
+        }
         private void WriteDocument(PwGroup pgDataSource)
         {
             Debug.Assert(m_jsonWriter != null);
@@ -153,6 +182,21 @@ namespace KeeToReady
                 catch (NullReferenceException)
                 {
                     // Swallow exceptions that null.ReadString() may throw. 
+                }
+
+                if (pe.CustomIconUuid.Equals(PwUuid.Zero))
+                    r.logoImage = null;
+                else 
+                    r.logoImage = ImageToBase64(m_pwDatabase.GetCustomIcon(pe.CustomIconUuid, 100, 100), System.Drawing.Imaging.ImageFormat.Png);
+
+                if (r.logoImage == null)
+                {
+                    ImageList.ImageCollection icons = Program.MainForm.ClientIcons.Images;
+                    Image img = new Bitmap(icons[(int)pe.IconId]);
+                    if (img != null)
+                    {
+                        r.logoImage = ImageToBase64(img, System.Drawing.Imaging.ImageFormat.Png);
+                    }
                 }
 
                 r.asTempalte = r.isTemplate = 0;
