@@ -5,6 +5,8 @@ using KeePassLib.Delegates;
 using KeePassLib.Interfaces;
 using KeePassLib.Security;
 using KeePassLib.Utility;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -28,7 +30,7 @@ namespace KeeToReady
         /// be written.</param>
         /// <param name="format">Format of the file to create.</param>
         /// <param name="slLogger">Logger that recieves status information.</param>
-        public void Save(Stream sSaveTo, PwGroup pgDataSource, RsrzFormat format,IStatusLogger slLogger)
+        public void Save(Stream sSaveTo, PwGroup pgDataSource, RsrzFormat format, IStatusLogger slLogger)
         {
             Debug.Assert(sSaveTo != null);
             if (sSaveTo == null) throw new ArgumentNullException("sSaveTo");
@@ -52,28 +54,12 @@ namespace KeeToReady
                     writerStream = hashedStream;
                 else { Debug.Assert(false); throw new FormatException("RsrzFormat"); }
 
-#if KeePassUAP
-				XmlWriterSettings xws = new XmlWriterSettings();
-				xws.Encoding = encNoBom;
-				xws.Indent = true;
-				xws.IndentChars = "\t";
-				xws.NewLineOnAttributes = false;
-
-				XmlWriter xw = XmlWriter.Create(writerStream, xws);
-#else
-                XmlTextWriter xw = new XmlTextWriter(writerStream, encNoBom);
-
-                xw.Formatting = Formatting.Indented;
-                xw.IndentChar = '\t';
-                xw.Indentation = 1;
-#endif
-
-                m_xmlWriter = xw;
-
+                m_jsonWriter = new JsonTextWriter(new StreamWriter(writerStream));
+               
                 WriteDocument(pgDataSource);
 
-                m_xmlWriter.Flush();
-                m_xmlWriter.Close();
+                m_jsonWriter.Flush();
+                m_jsonWriter.Close();
                 writerStream.Close();
             }
             finally { CommonCleanUpWrite(sSaveTo, hashedStream); }
@@ -86,7 +72,7 @@ namespace KeeToReady
 
             sSaveTo.Close();
 
-            m_xmlWriter = null;
+            m_jsonWriter = null;
             m_pbHashOfHeader = null;
         }
 
@@ -563,26 +549,19 @@ namespace KeeToReady
             m_xmlWriter.WriteEndElement();
         }
 
-
         private void WriteDocument(PwGroup pgDataSource)
         {
-            Debug.Assert(m_xmlWriter != null);
-            if (m_xmlWriter == null) throw new InvalidOperationException();
+            Debug.Assert(m_jsonWriter != null);
+            if (m_jsonWriter == null) throw new InvalidOperationException();
 
             PwGroup pgRoot = (pgDataSource ?? m_pwDatabase.RootGroup);
 
             uint uNumGroups, uNumEntries, uCurEntry = 0;
             pgRoot.GetCounts(true, out uNumGroups, out uNumEntries);
 
+            RsoRecord[] records = new RsoRecord[uNumEntries];
+
             BinPoolBuild(pgRoot);
-
-            m_xmlWriter.WriteStartDocument(true);
-            m_xmlWriter.WriteStartElement(ElemDocNode);
-
-            WriteMeta();
-
-            m_xmlWriter.WriteStartElement(ElemRoot);
-            StartGroup(pgRoot);
 
             Stack<PwGroup> groupStack = new Stack<PwGroup>();
             groupStack.Push(pgRoot);
@@ -597,15 +576,12 @@ namespace KeeToReady
                     if (pg.ParentGroup == groupStack.Peek())
                     {
                         groupStack.Push(pg);
-                        StartGroup(pg);
                         break;
                     }
                     else
                     {
                         groupStack.Pop();
                         if (groupStack.Count <= 0) return false;
-
-                        EndGroup();
                     }
                 }
 
@@ -615,9 +591,81 @@ namespace KeeToReady
             EntryHandler eh = delegate (PwEntry pe)
             {
                 Debug.Assert(pe != null);
-                WriteEntry(pe, false);
+
+                RsoRecord r = new RsoRecord();
+                
+                switch (pe.ParentGroup.Name)
+                {
+                    case "Windows":
+                        r.categoryType = (int)CategoryType.Computer;
+                        break;
+                    case "Network":
+                        r.categoryType = (int)CategoryType.Network;
+                        break;
+                    case "Homebanking":
+                    case "Internet":
+                        r.categoryType = (int)CategoryType.Website;
+                        break;
+                    case "eMail":
+                        r.categoryType = (int)CategoryType.Email;
+                        break;
+                    case "General":
+                    default:
+                        r.categoryType = (int)CategoryType.Generic;
+                        break;
+                }
+
+                try
+                {
+                    r.name = pe.Strings.Get("Title").ReadString() ?? pe.Uuid.ToString();
+                    r.desc = pe.Strings.Get("Notes").ReadString();
+                }
+                catch (NullReferenceException)
+                {
+                    // Swallow exceptions that null.ReadString() may throw. 
+                }
+
+                r.asTempalte = r.isTemplate = 0;
+                r.cloudID = null;
+
+                r.lastUpdated = pe.LastModificationTime.GetAbsoluteReference2001();
+
+                List<RsoField> fields = new List<RsoField>();
+
+                foreach (KeyValuePair<string, ProtectedString> ps in pe.Strings) {
+                    RsoField f = new RsoField();
+
+                    switch (ps.Key)
+                    {
+                        case "UserName":
+                            f.type = (int)FieldType.Username;
+                            break;
+                        case "Password":
+                            f.type = (int)FieldType.Password;
+                            break;
+                        case "URL":
+                            f.type = (int)FieldType.WebsiteURL;
+                            break;
+                        case "Notes":
+                            f.type = (int)FieldType.Note;
+                            break;
+                        case "Title":   // This is assigned to the record name.
+                        default:
+                            continue;
+                    }
+
+                    f.stringValue = ps.Value.ReadString();
+                    f.label = ps.Key;
+                    f.isSensitive = ps.Value.IsProtected ? 0 : 0;   // TODO: need to mark sensitive and protect the field.
+                    fields.Add(f);
+                }
+
+                r.fields = fields.Count() > 0 ? fields.ToArray() : null;
+
+                records[uCurEntry] = r;
 
                 ++uCurEntry;
+
                 if (m_slLogger != null)
                     if (!m_slLogger.SetProgress((100 * uCurEntry) / uNumEntries))
                         return false;
@@ -630,19 +678,22 @@ namespace KeeToReady
 
             while (groupStack.Count > 1)
             {
-                m_xmlWriter.WriteEndElement();
                 groupStack.Pop();
             }
 
-            EndGroup();
 
-            WriteList(ElemDeletedObjects, m_pwDatabase.DeletedObjects);
-            m_xmlWriter.WriteEndElement(); // Root
+            string jsonString = JsonConvert.SerializeObject(records);
 
-            m_xmlWriter.WriteEndElement(); // ElemDocNode
-            m_xmlWriter.WriteEndDocument();
+            JsonSerializer serializer = JsonSerializer.Create();
+            //serializer.Converters.Add(new JavaScriptDateTimeConverter());
+            serializer.NullValueHandling = NullValueHandling.Ignore;
+            serializer.Formatting = Newtonsoft.Json.Formatting.Indented;
+
+            serializer.Serialize(m_jsonWriter, records);
+
         }
-		private void BinPoolBuild(PwGroup pgDataSource)
+
+        private void BinPoolBuild(PwGroup pgDataSource)
 		{
 			m_dictBinPool = new Dictionary<string, ProtectedBinary>();
 

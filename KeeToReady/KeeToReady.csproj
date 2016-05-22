@@ -33,6 +33,7 @@
     <Reference Include="KeePass">
       <HintPath>..\..\..\TryOut\KeePass-2.32-Source\Build\KeePass\Debug\KeePass.exe</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -51,9 +52,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="RsoField.cs" />
+    <Compile Include="RsoRecord.cs" />
     <Compile Include="RsrzFile.cs" />
     <Compile Include="RsrzFile.Write.cs" />
     <Compile Include="RsrzProvider.cs" />
+    <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\B16x16_KeePassPlus.png" />

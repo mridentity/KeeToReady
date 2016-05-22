@@ -1,6 +1,7 @@
 ﻿using KeePassLib;
 using KeePassLib.Interfaces;
 using KeePassLib.Security;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,12 +20,13 @@ namespace KeeToReady
         EncryptedJsonWithoutCompression = 0,
         CompressedJsonWithoutEncryption
     }
+
     public sealed partial class RsrzFile
     {
-        private const int kKeyXoredSaltLength = 32; // This seamingly large (256 bits) salt is necessary given the sensitive text field is directly XORed with the key derived from the master key.
-        private const int kEncryptionRoundForSensitiveFields = 2;   // This is key derivation round for protecting the sensitive text field. Even the smallest number one(1) should be good enough given the direct XORed operation with a long salt.
+        private const int kKeyXorredSaltLength = 32; // This seamingly large (256 bits) salt is necessary given the sensitive text field is directly xorred with the key derived from the master key.
+        private const int kEncryptionRoundForSensitiveFields = 2;   // This is key derivation round for protecting the sensitive text field. Even the smallest number one(1) should be good enough given the direct xorred operation with a long salt.
 
-        private const int kXoredKeySaltLength = 32; // Instead of using a stream cipher, sensitive fields are XORed with a key directly derived from the master password, therefore a unique large salt (256bit) is needed for each field.
+        private const int kXorredKeySaltLength = 32; // Instead of using a stream cipher, sensitive fields are XORed with a key directly derived from the master password, therefore a unique large salt (256bit) is needed for each field.
 
         private const int kExportSaltLength = 32;  // 256bits, this is the salt unique to each exported file.
         private const int kExportKeyLength = 32;   // 256bits, this is the encryption key protecting the exported file.
@@ -143,6 +145,7 @@ namespace KeeToReady
         private RsrzFormat m_format = RsrzFormat.CompressedJsonWithoutEncryption;
 
         private XmlWriter m_xmlWriter = null;
+        private JsonTextWriter m_jsonWriter = null;
 
         private static bool m_bLocalizedNames = false;
 
