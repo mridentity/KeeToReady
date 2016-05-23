@@ -1,14 +1,8 @@
 ﻿using KeePassLib;
 using KeePassLib.Interfaces;
-using KeePassLib.Security;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace KeeToReady
 {

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics.Contracts;
-
-using KeePass.Plugins;
+﻿
 using KeePass.DataExchange;
+using KeePass.Plugins;
 using System.Drawing;
 
 namespace KeeToReady
@@ -26,8 +20,8 @@ namespace KeeToReady
         }
 
         public override bool Initialize(IPluginHost host)
-        { 
-            Contract.Requires(host != null);
+        {
+            if (host == null) return false;
 
             this.m_host = host;
 

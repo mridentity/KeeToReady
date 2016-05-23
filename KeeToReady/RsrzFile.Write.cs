@@ -1,7 +1,5 @@
 ﻿using KeePass;
-using KeePass.UI;
 using KeePassLib;
-using KeePassLib.Collections;
 using KeePassLib.Cryptography;
 using KeePassLib.Cryptography.Cipher;
 using KeePassLib.Delegates;
@@ -10,20 +8,14 @@ using KeePassLib.Keys;
 using KeePassLib.Security;
 using KeePassLib.Utility;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml;
 
 namespace KeeToReady
 {
@@ -69,8 +61,11 @@ namespace KeeToReady
                     string strKeyFile = (bKeyFile ? (m_pwDatabase.MasterKey.GetUserKey(typeof(KcpKeyFile)) as KcpKeyFile).Path : string.Empty);
 
                     byte[] aes256Key = Util.PBKDF2Sha256GetBytes(kExportKeyLength, passwordBytes, salt, kKeyDerivationRoundForExport);
+                    byte[] iv = new byte[kExportIVLength];
+
+                    for (int i = 0; i < kExportIVLength; i++) iv[i] = salt[i];
                     
-                    writerStream = aesEngine.EncryptStream(hashedStream, aes256Key, salt.Take(kExportIVLength).ToArray());      
+                    writerStream = aesEngine.EncryptStream(hashedStream, aes256Key, iv);      
                     
                     // TODO: wipe clean all memory used thus far.
                 }
@@ -193,7 +188,7 @@ namespace KeeToReady
                 r.asTempalte = r.isTemplate = 0;
                 r.cloudID = null;
 
-                r.lastUpdated = pe.LastModificationTime.GetAbsoluteReference2001();
+                r.lastUpdated = Util.GetAbsoluteReference2001( pe.LastModificationTime);
 
                 List<RsoField> fields = new List<RsoField>();
 
@@ -237,7 +232,7 @@ namespace KeeToReady
                     fields.Add(f);
                 }
 
-                r.fields = fields.Count() > 0 ? fields.ToArray() : null;
+                r.fields = fields.Count > 0 ? fields.ToArray() : null;
 
                 records[uCurEntry] = r;
 
