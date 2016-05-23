@@ -57,7 +57,7 @@ namespace KeeToReady
                 if (m_format == RsrzFormat.EncryptedJsonWithoutCompression)
                 {
                     var aesEngine = new StandardAesEngine();
-                    byte[] salt = cr.GetRandomBytes(kKeyXorredSaltLength);
+                    byte[] salt = cr.GetRandomBytes(kExportSaltLength);
 
                     hashedStream.Write(salt, 0, salt.Length);               // Prepend the salt at the beginning of the file.
 
@@ -230,7 +230,6 @@ namespace KeeToReady
                     if (m_format == RsrzFormat.EncryptedJsonWithoutCompression && ps.Value.IsProtected)
                     {
                         f.isSensitive = 1;
-                        // TODO: need to mark sensitive and protect the field.
                     }
                     else 
                         f.isSensitive = 0;   
