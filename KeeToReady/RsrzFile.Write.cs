@@ -3,8 +3,10 @@ using KeePass.UI;
 using KeePassLib;
 using KeePassLib.Collections;
 using KeePassLib.Cryptography;
+using KeePassLib.Cryptography.Cipher;
 using KeePassLib.Delegates;
 using KeePassLib.Interfaces;
+using KeePassLib.Keys;
 using KeePassLib.Security;
 using KeePassLib.Utility;
 using Newtonsoft.Json;
@@ -17,6 +19,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -53,7 +56,23 @@ namespace KeeToReady
                 Stream writerStream;
                 if (m_format == RsrzFormat.EncryptedJsonWithoutCompression)
                 {
-                    writerStream = null;
+                    var aesEngine = new StandardAesEngine();
+                    byte[] salt = cr.GetRandomBytes(kKeyXorredSaltLength);
+
+                    hashedStream.Write(salt, 0, salt.Length);               // Prepend the salt at the beginning of the file.
+
+                    bool bPassword = m_pwDatabase.MasterKey.ContainsType(typeof(KcpPassword));
+                    bool bKeyFile = m_pwDatabase.MasterKey.ContainsType(typeof(KcpKeyFile));
+
+                    string strPassword = (bPassword ? (m_pwDatabase.MasterKey.GetUserKey(typeof(KcpPassword)) as KcpPassword).Password.ReadString() : string.Empty);
+                    byte[] passwordBytes = (bPassword ? (m_pwDatabase.MasterKey.GetUserKey(typeof(KcpPassword)) as KcpPassword).Password.ReadUtf8() : new byte[0]);
+                    string strKeyFile = (bKeyFile ? (m_pwDatabase.MasterKey.GetUserKey(typeof(KcpKeyFile)) as KcpKeyFile).Path : string.Empty);
+
+                    byte[] aes256Key = Util.PBKDF2Sha256GetBytes(kExportKeyLength, passwordBytes, salt, kKeyDerivationRoundForExport);
+                    
+                    writerStream = aesEngine.EncryptStream(hashedStream, aes256Key, salt.Take(kExportIVLength).ToArray());      
+                    
+                    // TODO: wipe clean all memory used thus far.
                 }
                 else if (m_format == RsrzFormat.CompressedJsonWithoutEncryption)
                 {
@@ -82,34 +101,6 @@ namespace KeeToReady
             m_jsonWriter = null;
         }
 
-
-        //http://www.dailycoding.com/posts/convert_image_to_base64_string_and_base64_string_to_image.aspx
-        public string ImageToBase64(Image image, System.Drawing.Imaging.ImageFormat format)
-        {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                // Convert Image to byte[]
-                image.Save(ms, format);
-                byte[] imageBytes = ms.ToArray();
-
-                // Convert byte[] to Base64 String
-                string base64String = Convert.ToBase64String(imageBytes);
-                return base64String;
-            }
-        }
-
-        public Image Base64ToImage(string base64String)
-        {
-            // Convert Base64 String to byte[]
-            byte[] imageBytes = Convert.FromBase64String(base64String);
-            MemoryStream ms = new MemoryStream(imageBytes, 0,
-              imageBytes.Length);
-
-            // Convert byte[] to Image
-            ms.Write(imageBytes, 0, imageBytes.Length);
-            Image image = Image.FromStream(ms, true);
-            return image;
-        }
         private void WriteDocument(PwGroup pgDataSource)
         {
             Debug.Assert(m_jsonWriter != null);
@@ -186,7 +177,7 @@ namespace KeeToReady
 
                 if (pe.CustomIconUuid.Equals(PwUuid.Zero))
                     r.logoImage = null;
-                else 
+                else
                     r.logoImage = ImageToBase64(m_pwDatabase.GetCustomIcon(pe.CustomIconUuid, 100, 100), System.Drawing.Imaging.ImageFormat.Png);
 
                 if (r.logoImage == null)
@@ -236,7 +227,14 @@ namespace KeeToReady
                     f.displayOrder = order++;
                     f.stringValue = ps.Value.ReadString();
                     f.label = ps.Key;
-                    f.isSensitive = ps.Value.IsProtected ? 0 : 0;   // TODO: need to mark sensitive and protect the field.
+                    if (m_format == RsrzFormat.EncryptedJsonWithoutCompression && ps.Value.IsProtected)
+                    {
+                        f.isSensitive = 1;
+                        // TODO: need to mark sensitive and protect the field.
+                    }
+                    else 
+                        f.isSensitive = 0;   
+
                     fields.Add(f);
                 }
 
@@ -272,5 +270,35 @@ namespace KeeToReady
             serializer.Serialize(m_jsonWriter, records);
 
         }
+
+
+        //http://www.dailycoding.com/posts/convert_image_to_base64_string_and_base64_string_to_image.aspx
+        public string ImageToBase64(Image image, System.Drawing.Imaging.ImageFormat format)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                // Convert Image to byte[]
+                image.Save(ms, format);
+                byte[] imageBytes = ms.ToArray();
+
+                // Convert byte[] to Base64 String
+                string base64String = Convert.ToBase64String(imageBytes);
+                return base64String;
+            }
+        }
+
+        public Image Base64ToImage(string base64String)
+        {
+            // Convert Base64 String to byte[]
+            byte[] imageBytes = Convert.FromBase64String(base64String);
+            MemoryStream ms = new MemoryStream(imageBytes, 0,
+              imageBytes.Length);
+
+            // Convert byte[] to Image
+            ms.Write(imageBytes, 0, imageBytes.Length);
+            Image image = Image.FromStream(ms, true);
+            return image;
+        }
+
     }
-  }
+}

@@ -27,10 +27,9 @@ namespace KeeToReady
         public override bool Export(PwExportInfo pwExportInfo, Stream sOutput,
             IStatusLogger slLogger)
         {
-            PwDatabase pd = new PwDatabase();
-            RsrzFile rsrz = new RsrzFile(pd);
+            RsrzFile rsrz = new RsrzFile(pwExportInfo.ContextDatabase);
 
-            rsrz.Save(sOutput, pwExportInfo.DataGroup, RsrzFormat.CompressedJsonWithoutEncryption, slLogger);
+            rsrz.Save(sOutput, pwExportInfo.DataGroup, RsrzFormat.EncryptedJsonWithoutCompression, slLogger);
 
             return true;
         }
