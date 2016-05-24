@@ -49,9 +49,13 @@ namespace KeeToReady
                 if (m_format == RsrzFormat.EncryptedJsonWithoutCompression)
                 {
                     var aesEngine = new StandardAesEngine();
+                    byte[] magicHeader = Convert.FromBase64String(kBased64MagicString);
                     byte[] salt = cr.GetRandomBytes(kExportSaltLength);
+                    Debug.Assert(kMagicHeaderLength == magicHeader.Length);
 
-                    hashedStream.Write(salt, 0, salt.Length);               // Prepend the salt at the beginning of the file.
+                    hashedStream.Write(magicHeader, 0, kMagicHeaderLength);  // Prepend the magic header at the beginning of the file.
+
+                    hashedStream.Write(salt, 0, salt.Length);              
 
                     bool bPassword = m_pwDatabase.MasterKey.ContainsType(typeof(KcpPassword));
                     bool bKeyFile = m_pwDatabase.MasterKey.ContainsType(typeof(KcpKeyFile));
@@ -65,8 +69,8 @@ namespace KeeToReady
 
                     for (int i = 0; i < kExportIVLength; i++) iv[i] = salt[i];
                     
-                    writerStream = aesEngine.EncryptStream(hashedStream, aes256Key, iv);      
-                    
+                    writerStream = aesEngine.EncryptStream(hashedStream, aes256Key, iv);
+
                     // TODO: wipe clean all memory used thus far.
                 }
                 else if (m_format == RsrzFormat.CompressedJsonWithoutEncryption)

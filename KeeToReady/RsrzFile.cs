@@ -21,6 +21,8 @@ namespace KeeToReady
         private const int kExportKeyLength = 32;   // 256bits, this is the encryption key protecting the exported file.
         private const int kExportIVLength = 16;    // 128 bits
 
+        private const string kBased64MagicString = "rsr1";     // This translates into the very first 3 bytes of an encrypted .rsrz export file.
+        private const int kMagicHeaderLength = 3;           // In number of bytes
 
         // This seemingly huge iteration count is necessary considering the exported
         // records may be sent via email, SMS or other public communication channels.
