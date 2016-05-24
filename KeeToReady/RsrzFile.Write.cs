@@ -60,11 +60,11 @@ namespace KeeToReady
                     bool bPassword = m_pwDatabase.MasterKey.ContainsType(typeof(KcpPassword));
                     bool bKeyFile = m_pwDatabase.MasterKey.ContainsType(typeof(KcpKeyFile));
 
-                    string strPassword = (bPassword ? (m_pwDatabase.MasterKey.GetUserKey(typeof(KcpPassword)) as KcpPassword).Password.ReadString() : string.Empty);
-                    byte[] passwordBytes = (bPassword ? (m_pwDatabase.MasterKey.GetUserKey(typeof(KcpPassword)) as KcpPassword).Password.ReadUtf8() : new byte[0]);
-                    string strKeyFile = (bKeyFile ? (m_pwDatabase.MasterKey.GetUserKey(typeof(KcpKeyFile)) as KcpKeyFile).Path : string.Empty);
+                    m_strPassword = (bPassword ? (m_pwDatabase.MasterKey.GetUserKey(typeof(KcpPassword)) as KcpPassword).Password.ReadString() : string.Empty);
+                    m_passwordBytes = (bPassword ? (m_pwDatabase.MasterKey.GetUserKey(typeof(KcpPassword)) as KcpPassword).Password.ReadUtf8() : new byte[0]);
+                    m_strKeyFile = (bKeyFile ? (m_pwDatabase.MasterKey.GetUserKey(typeof(KcpKeyFile)) as KcpKeyFile).Path : string.Empty);
 
-                    byte[] aes256Key = Util.PBKDF2Sha256GetBytes(kExportKeyLength, passwordBytes, salt, kKeyDerivationRoundForExport);
+                    byte[] aes256Key = Util.PBKDF2Sha256GetBytes(kExportKeyLength, m_passwordBytes, salt, kKeyDerivationRoundForExport);
                     byte[] iv = new byte[kExportIVLength];
 
                     for (int i = 0; i < kExportIVLength; i++) iv[i] = salt[i];
@@ -224,14 +224,18 @@ namespace KeeToReady
                     }
 
                     f.displayOrder = order++;
-                    f.stringValue = ps.Value.ReadString();
                     f.label = ps.Key;
+
                     if (m_format == RsrzFormat.EncryptedJsonWithoutCompression && ps.Value.IsProtected)
                     {
                         f.isSensitive = 1;
+                        f.stringValue = ProtectStringWithPassword(m_passwordBytes, ps.Value.ReadUtf8(), kSensitiveProtectionRoundForExport);
                     }
-                    else 
-                        f.isSensitive = 0;   
+                    else
+                    {
+                        f.isSensitive = 0;
+                        f.stringValue = ps.Value.ReadString();
+                    }
 
                     fields.Add(f);
                 }
@@ -269,9 +273,44 @@ namespace KeeToReady
 
         }
 
+        // This function is used for protecting the sensitive fields of the records.
 
-        //http://www.dailycoding.com/posts/convert_image_to_base64_string_and_base64_string_to_image.aspx
-        public string ImageToBase64(Image image, System.Drawing.Imaging.ImageFormat format)
+        public string ProtectStringWithPassword(byte[] password, byte[] plainText, long interation)
+        {
+            if (plainText == null || plainText.Length < 1) return null;
+
+            CryptoRandom cr = CryptoRandom.Instance;
+
+            byte[] salt = cr.GetRandomBytes(kKeyXoredSaltLength);
+
+            byte[] xorKey = Util.PBKDF2Sha256GetBytes(plainText.Length, password, salt, interation);
+
+            if (xorKey == null || xorKey.Length < 1) return null;
+
+            byte[] xorred = new byte[xorKey.Length];
+
+            for (int i = 0; i < xorKey.Length; i++)
+            {
+                if (i < plainText.Length)
+                {
+                    byte b = plainText[i];
+                    b ^=  xorKey[i];
+                    xorred[i] = b;
+                }
+                else
+                {
+                    byte b = 0;
+                    b ^=  xorKey[i];
+                    xorred[i] = b;
+                }
+            }
+
+            return MemUtil.ByteArrayToHexString(salt) + MemUtil.ByteArrayToHexString(xorred);
+        }
+
+
+    //http://www.dailycoding.com/posts/convert_image_to_base64_string_and_base64_string_to_image.aspx
+    public string ImageToBase64(Image image, System.Drawing.Imaging.ImageFormat format)
         {
             using (MemoryStream ms = new MemoryStream())
             {
