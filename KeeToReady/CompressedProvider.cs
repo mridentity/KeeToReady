@@ -5,11 +5,11 @@ using System.IO;
 
 namespace KeeToReady
 {
-    internal sealed class RsrzProvider : FileFormatProvider
+    class CompressedProvider : FileFormatProvider
     {
         public override bool SupportsImport { get { return false; } }
         public override bool SupportsExport { get { return true; } }
-        public override string FormatName { get { return "ReadySignOn secure vault"; } }
+        public override string FormatName { get { return "ReadySignOn (zipped only)"; } }
         public override string DefaultExtension { get { return "rsrz"; } }
         public override string ApplicationGroup { get { return "ReadySignOn"; } }
 
@@ -23,7 +23,7 @@ namespace KeeToReady
         {
             RsrzFile rsrz = new RsrzFile(pwExportInfo.ContextDatabase);
 
-            rsrz.Save(sOutput, pwExportInfo.DataGroup, RsrzFormat.EncryptedJsonWithoutCompression, slLogger);
+            rsrz.Save(sOutput, pwExportInfo.DataGroup, RsrzFormat.CompressedJsonWithoutEncryption, slLogger);
 
             return true;
         }

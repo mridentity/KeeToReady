@@ -25,9 +25,8 @@ namespace KeeToReady
 
             this.m_host = host;
 
-            provider = new RsrzProvider();
-
-            host.FileFormatPool.Add(provider);
+            host.FileFormatPool.Add(new EncryptedProvider());
+            host.FileFormatPool.Add(new CompressedProvider());
 
             return true;
         }
