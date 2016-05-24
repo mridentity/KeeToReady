@@ -10,7 +10,9 @@ namespace KeeToReady
         private IPluginHost m_host = null;
         private FileFormatProvider encryptionProvider = null;
         private FileFormatProvider compressionProvider = null;
-       public override Image SmallIcon
+        private FileFormatProvider encryptWithNewPasswordProvider = null;
+
+        public override Image SmallIcon
         {
             get { return Properties.Resources.B16x16_KeePassPlus; }
         }
@@ -27,6 +29,7 @@ namespace KeeToReady
             this.m_host = host;
 
             host.FileFormatPool.Add(encryptionProvider = new EncryptedProvider());
+            host.FileFormatPool.Add(encryptWithNewPasswordProvider = new EncryptWithNewPasswordProvider());
             host.FileFormatPool.Add(compressionProvider = new CompressedProvider());
 
             return true;
@@ -38,6 +41,7 @@ namespace KeeToReady
             {
                 m_host.FileFormatPool.Remove(encryptionProvider);
                 m_host.FileFormatPool.Remove(compressionProvider);
+                m_host.FileFormatPool.Remove(encryptWithNewPasswordProvider);
             }
         }
     }

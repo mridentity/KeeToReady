@@ -60,9 +60,16 @@ namespace KeeToReady
                     bool bPassword = m_pwDatabase.MasterKey.ContainsType(typeof(KcpPassword));
                     bool bKeyFile = m_pwDatabase.MasterKey.ContainsType(typeof(KcpKeyFile));
 
-                    m_strPassword = (bPassword ? (m_pwDatabase.MasterKey.GetUserKey(typeof(KcpPassword)) as KcpPassword).Password.ReadString() : string.Empty);
-                    m_passwordBytes = (bPassword ? (m_pwDatabase.MasterKey.GetUserKey(typeof(KcpPassword)) as KcpPassword).Password.ReadUtf8() : new byte[0]);
-                    m_strKeyFile = (bKeyFile ? (m_pwDatabase.MasterKey.GetUserKey(typeof(KcpKeyFile)) as KcpKeyFile).Path : string.Empty);
+                    if (m_newPasswordBytes != null && m_newPasswordBytes.Length > 0)
+                    {
+                        m_passwordBytes = m_newPasswordBytes;
+                    }
+                    else
+                    {
+                        m_strPassword = (bPassword ? (m_pwDatabase.MasterKey.GetUserKey(typeof(KcpPassword)) as KcpPassword).Password.ReadString() : string.Empty);
+                        m_passwordBytes = (bPassword ? (m_pwDatabase.MasterKey.GetUserKey(typeof(KcpPassword)) as KcpPassword).Password.ReadUtf8() : new byte[0]);
+                        m_strKeyFile = (bKeyFile ? (m_pwDatabase.MasterKey.GetUserKey(typeof(KcpKeyFile)) as KcpKeyFile).Path : string.Empty);
+                    }
 
                     byte[] aes256Key = Util.PBKDF2Sha256GetBytes(kExportKeyLength, m_passwordBytes, salt, kKeyDerivationRoundForExport);
                     byte[] iv = new byte[kExportIVLength];

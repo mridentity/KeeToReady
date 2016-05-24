@@ -45,9 +45,11 @@ namespace KeeToReady
 
         private byte[] m_pbHashOfFileOnDisk = null;
 
-        private string m_strPassword;
+        private string m_strPassword;       // The password used to encrypt the exported file.
         private byte[] m_passwordBytes;
         private string m_strKeyFile;
+
+        internal byte[] m_newPasswordBytes = null;
 
 
         /// <summary>
