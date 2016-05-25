@@ -30,8 +30,7 @@ namespace KeeToReady
         // The delay associated with it should be acceptable from UX standpoint given
         // the export function is not frequently triggered by the end user anyway.    
         private const long kKeyDerivationRoundForExport = 1000000;
-        private const long kSensitiveProtectionRoundForExport = 1000;
-
+        private const long kSensitiveProtectionRoundForExport = 1000;   // Iteration round for generating the XOR key used for sensitive field protection. The seamingly small count is acutally more than enough given the AES256 encryption applied on top of it.
 
         // Typical KeePass stuff
 
@@ -42,6 +41,7 @@ namespace KeeToReady
         private RsrzFormat m_format = RsrzFormat.CompressedJsonWithoutEncryption;
 
         private JsonTextWriter m_jsonWriter = null;
+        private JsonTextReader m_jsonReader = null;
 
         private byte[] m_pbHashOfFileOnDisk = null;
 

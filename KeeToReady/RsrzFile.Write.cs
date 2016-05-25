@@ -40,7 +40,6 @@ namespace KeeToReady
 
             HashingStreamEx hashedStream = new HashingStreamEx(sSaveTo, true, null);
 
-            UTF8Encoding encNoBom = StrUtil.Utf8;
             CryptoRandom cr = CryptoRandom.Instance;
 
             try
@@ -269,7 +268,7 @@ namespace KeeToReady
             }
 
 
-            string jsonString = JsonConvert.SerializeObject(records);
+            //string jsonString = JsonConvert.SerializeObject(records);
 
             JsonSerializer serializer = JsonSerializer.Create();
             //serializer.Converters.Add(new JavaScriptDateTimeConverter());

@@ -4,6 +4,11 @@ namespace KeeToReady
 {
     static class Util
     {
+        /// <summary>
+        /// Get the unix epoch time since 00:00:00 Jan. 1, 1970 
+        /// </summary>
+        /// <param name="dateTime">Local time.</param>
+        /// <returns>Number of seconds since 00:00:00 Jan. 1, 1970</returns>
         public static double GetUnixEpoch1970(DateTime dateTime)
         {
             var unixTime = dateTime.ToUniversalTime() -
@@ -12,6 +17,11 @@ namespace KeeToReady
             return unixTime.TotalSeconds;
         }
 
+        /// <summary>
+        /// Get the reference time since 2001
+        /// </summary>
+        /// <param name="dateTime">Local time</param>
+        /// <returns>Number of seconds since 00:00:00 Jan. 1, 2001</returns>
         public static double GetAbsoluteReference2001(DateTime dateTime)
         {
             var unixTime = dateTime.ToUniversalTime() -
@@ -19,6 +29,33 @@ namespace KeeToReady
 
             return unixTime.TotalSeconds;
         }
+
+        /// <summary>
+        /// Get local time from a unix epoch time
+        /// </summary>
+        /// <param name="unixTimeStamp">Number of seconds since 00:00:00 Jan. 1, 1970></param>
+        /// <returns>Local time</returns>
+        public static DateTime FromUnixEpochTime(double unixTimeStamp)
+        {
+            // Unix timestamp is seconds past epoch
+            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+            return dtDateTime;
+        }
+
+        /// <summary>
+        /// Get local time from absolute time reference.
+        /// </summary>
+        /// <param name="absoluteTime">>Number of seconds since 00:00:00 Jan. 1, 2001</param>
+        /// <returns>Local time</returns>
+        public static DateTime FromAbsoluteReferenceTime(double absoluteTime)
+        {
+            // Unix timestamp is seconds past epoch
+            System.DateTime dtDateTime = new DateTime(2001, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            dtDateTime = dtDateTime.AddSeconds(absoluteTime).ToLocalTime();
+            return dtDateTime;
+        }
+
 
         //http://stackoverflow.com/questions/18648084/rfc2898-pbkdf2-with-sha256-as-digest-in-c-sharp
         // NOTE: The iteration count should

@@ -56,6 +56,7 @@
     <Compile Include="RsoField.cs" />
     <Compile Include="RsoRecord.cs" />
     <Compile Include="RsrzFile.cs" />
+    <Compile Include="RsrzFile.Read.cs" />
     <Compile Include="RsrzFile.Write.cs" />
     <Compile Include="EncryptedProvider.cs" />
     <Compile Include="Util.cs" />
