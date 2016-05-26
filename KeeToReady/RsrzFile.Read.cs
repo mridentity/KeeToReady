@@ -65,7 +65,7 @@ namespace KeeToReady
             m_jsonReader = null;
         }
 
-        private void ReadDocument(PwDatabase targetDB)
+        private void ReadDocument(PwDatabase storageDB)
         {
             JsonSerializer serializer = JsonSerializer.Create();
             var jarray = serializer.Deserialize<List<RsoRecord>>(m_jsonReader);
@@ -74,10 +74,21 @@ namespace KeeToReady
             {
                 PwEntry pe = new PwEntry(true, true);
 
+                // Basic record info
                 if (r.name != null) pe.Strings.Set("Title", new ProtectedString(false, r.name));
                 if (r.desc != null) pe.Strings.Set("Notes", new ProtectedString(false, r.desc));
 
-                targetDB.RootGroup.AddEntry(pe, true);
+                // Record logo
+                switch(r.categoryType)
+                {
+                    case (int)CategoryType.App:
+                        pe.IconId = PwIcon.ProgramIcons;
+                        break;
+                }
+
+
+
+                storageDB.RootGroup.AddEntry(pe, true);
             }
         }
     }

@@ -149,6 +149,7 @@ namespace KeeToReady
 
                 RsoRecord r = new RsoRecord();
 
+                // Assign record type
                 switch (pe.ParentGroup.Name)
                 {
                     case "Windows":
@@ -170,6 +171,7 @@ namespace KeeToReady
                         break;
                 }
 
+                // Assign basic record info
                 try
                 {
                     r.name = pe.Strings.Get("Title").ReadString() ?? pe.Uuid.ToString();
@@ -180,6 +182,7 @@ namespace KeeToReady
                     // Swallow exceptions that null.ReadString() may throw. 
                 }
 
+                // Assign record logo
                 if (pe.CustomIconUuid.Equals(PwUuid.Zero))
                     r.logoImage = null;
                 else
@@ -198,12 +201,15 @@ namespace KeeToReady
                 r.asTempalte = r.isTemplate = 0;
                 r.cloudID = null;
 
+                // Record timestamp
                 r.lastUpdated = Util.GetAbsoluteReference2001( pe.LastModificationTime);
 
+                // Export record fields
                 List<RsoField> fields = new List<RsoField>();
 
                 int order = 0;
 
+                // Assign field type
                 foreach (KeyValuePair<string, ProtectedString> ps in pe.Strings)
                 {
                     RsoField f = new RsoField();
@@ -232,6 +238,7 @@ namespace KeeToReady
                     f.displayOrder = order++;
                     f.label = ps.Key;
 
+                    // Protect sensitive field if password is set
                     if (m_format == RsrzFormat.EncryptedJsonWithoutCompression && ps.Value.IsProtected)
                     {
                         f.isSensitive = 1;
@@ -246,11 +253,10 @@ namespace KeeToReady
                     fields.Add(f);
                 }
 
+                // Add fields to record
                 r.fields = fields.Count > 0 ? fields.ToArray() : null;
 
-                records[uCurEntry] = r;
-
-                ++uCurEntry;
+                records[uCurEntry++] = r;
 
                 if (m_slLogger != null)
                     if (!m_slLogger.SetProgress((100 * uCurEntry) / uNumEntries))
