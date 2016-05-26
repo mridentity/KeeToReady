@@ -8,9 +8,9 @@ namespace KeeToReady
 {
     class CompressedProvider : FileFormatProvider
     {
-        public override bool SupportsImport { get { return true; } }
+        public override bool SupportsImport { get { return false; } }
         public override bool SupportsExport { get { return true; } }
-        public override string FormatName { get { return "ReadySignOn (zipped but NOT encrypted!!)"; } }
+        public override string FormatName { get { return "ReadySignOn (zipped but NOT encrypted!)"; } }
         public override string DefaultExtension { get { return "rsrz"; } }
         public override string ApplicationGroup { get { return "ReadySignOn"; } }
 
@@ -28,17 +28,5 @@ namespace KeeToReady
 
             return true;
         }
-
-        public override bool ImportAppendsToRootGroupOnly { get { return true; } }
-
-        public override void Import(PwDatabase pwStorage, Stream sInput, IStatusLogger slLogger)
-        {
-
-            RsrzFile rsrz = new RsrzFile(pwStorage);
-            
-            rsrz.Read(pwStorage, sInput, slLogger);
-        }
-
-
     }
 }

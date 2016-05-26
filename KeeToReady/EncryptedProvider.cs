@@ -9,7 +9,7 @@ namespace KeeToReady
     {
         public override bool SupportsImport { get { return false; } }
         public override bool SupportsExport { get { return true; } }
-        public override string FormatName { get { return "ReadySignOn (encrypted)"; } }
+        public override string FormatName { get { return "ReadySignOn (encrypted using current password)"; } }
         public override string DefaultExtension { get { return "rsrz"; } }
         public override string ApplicationGroup { get { return "ReadySignOn"; } }
 

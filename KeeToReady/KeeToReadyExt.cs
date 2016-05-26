@@ -11,6 +11,7 @@ namespace KeeToReady
         private FileFormatProvider encryptionProvider = null;
         private FileFormatProvider compressionProvider = null;
         private FileFormatProvider encryptWithNewPasswordProvider = null;
+        private FileFormatProvider importProfider = null;
 
         public override Image SmallIcon
         {
@@ -31,6 +32,7 @@ namespace KeeToReady
             host.FileFormatPool.Add(encryptionProvider = new EncryptedProvider());
             host.FileFormatPool.Add(encryptWithNewPasswordProvider = new EncryptWithNewPasswordProvider());
             host.FileFormatPool.Add(compressionProvider = new CompressedProvider());
+            host.FileFormatPool.Add(importProfider = new ImportProvider());
 
             return true;
         }
@@ -42,6 +44,7 @@ namespace KeeToReady
                 m_host.FileFormatPool.Remove(encryptionProvider);
                 m_host.FileFormatPool.Remove(compressionProvider);
                 m_host.FileFormatPool.Remove(encryptWithNewPasswordProvider);
+                m_host.FileFormatPool.Remove(importProfider);
             }
         }
     }
