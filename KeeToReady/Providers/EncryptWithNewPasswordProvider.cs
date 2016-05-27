@@ -21,8 +21,7 @@ namespace KeeToReady
             get { return Properties.Resources.B16x16_KeePassPlus; }
         }
 
-        public override bool Export(PwExportInfo pwExportInfo, Stream sOutput,
-            IStatusLogger slLogger)
+        public override bool Export(PwExportInfo pwExportInfo, Stream sOutput, IStatusLogger slLogger)
         {
 
             KeyCreationForm kcf = new KeyCreationForm();
@@ -34,10 +33,7 @@ namespace KeeToReady
 
             RsrzFile rsrz = new RsrzFile(pwExportInfo.ContextDatabase);
 
-            bool bPassword = pwExportInfo.ContextDatabase.MasterKey.ContainsType(typeof(KcpPassword));
-
-            rsrz.m_newPasswordBytes = (bPassword ? (pwExportInfo.ContextDatabase.MasterKey.GetUserKey(typeof(KcpPassword)) as KcpPassword).Password.ReadUtf8() : null);
-
+            rsrz.m_newPasswordBytes = (kcf.CompositeKey.GetUserKey(typeof(KcpPassword)) as KcpPassword).Password.ReadUtf8() ?? null;
             rsrz.Save(sOutput, pwExportInfo.DataGroup, RsrzFormat.EncryptedJsonWithoutCompression, slLogger);
 
             return true;

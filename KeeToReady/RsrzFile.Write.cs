@@ -202,7 +202,7 @@ namespace KeeToReady
                 r.cloudID = null;
 
                 // Record timestamp
-                r.lastUpdated = Util.GetAbsoluteReference2001( pe.LastModificationTime);
+                r.lastUpdated = Util.ToAbsoluteReference2001( pe.LastModificationTime);
 
                 // Export record fields
                 List<RsoField> fields = new List<RsoField>();

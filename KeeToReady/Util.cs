@@ -9,7 +9,7 @@ namespace KeeToReady
         /// </summary>
         /// <param name="dateTime">Local time.</param>
         /// <returns>Number of seconds since 00:00:00 Jan. 1, 1970</returns>
-        public static double GetUnixEpoch1970(DateTime dateTime)
+        public static double ToUnixEpoch1970(DateTime dateTime)
         {
             var unixTime = dateTime.ToUniversalTime() -
                 new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -22,7 +22,7 @@ namespace KeeToReady
         /// </summary>
         /// <param name="dateTime">Local time</param>
         /// <returns>Number of seconds since 00:00:00 Jan. 1, 2001</returns>
-        public static double GetAbsoluteReference2001(DateTime dateTime)
+        public static double ToAbsoluteReference2001(DateTime dateTime)
         {
             var unixTime = dateTime.ToUniversalTime() -
                 new DateTime(2001, 1, 1, 0, 0, 0, DateTimeKind.Utc);
