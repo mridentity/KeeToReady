@@ -109,7 +109,12 @@ namespace KeeToReady
 
         private void ReadDocument(PwDatabase storageDB)
         {
-            JsonSerializer serializer = JsonSerializer.Create();
+            JsonSerializerSettings jSettings = new JsonSerializerSettings();
+            jSettings.CheckAdditionalContent = true;
+
+            JsonSerializer serializer = JsonSerializer.Create(jSettings);
+            serializer.CheckAdditionalContent = true;
+
             var jarray = serializer.Deserialize<List<RsoRecord>>(m_jsonReader);
 
             foreach (RsoRecord r in jarray)
@@ -214,10 +219,13 @@ namespace KeeToReady
             if (string.IsNullOrEmpty(cipherHex)) return null;
 
             byte[] salt = MemUtil.HexStringToByteArray(cipherHex.Substring(0, kKeyXoredSaltLength * 2));
+
             byte[] cipherBytes = MemUtil.HexStringToByteArray(cipherHex.Substring(kKeyXoredSaltLength * 2, cipherHex.Length - kKeyXoredSaltLength * 2));
-            if (salt.Length != kKeyXoredSaltLength || cipherBytes.Length <= 0) return null;
+
+            if (salt == null || cipherBytes == null || salt.Length != kKeyXoredSaltLength || cipherBytes.Length <= 0) return null;
 
             byte[] xorKey = Util.PBKDF2Sha256GetBytes(cipherBytes.Length, password, salt, interation);
+
             byte[] xorred = new byte[xorKey.Length];
 
             for (int i = 0; i < xorKey.Length; i++)
