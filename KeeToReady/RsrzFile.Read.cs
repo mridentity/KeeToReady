@@ -62,14 +62,15 @@ namespace KeeToReady
 
                     var aesEngine = new StandardAesEngine();
 
-                    KeyCreationForm kcf = new KeyCreationForm();
-                    DialogResult dr = kcf.ShowDialog();
+                    KeyPromptForm kpf = new KeyPromptForm();
+
+                    DialogResult dr = kpf.ShowDialog();
                     if (dr == DialogResult.Cancel || dr == DialogResult.Abort)
                     {
                         return;
                     }
 
-                    m_newPasswordBytes = (kcf.CompositeKey.GetUserKey(typeof(KcpPassword)) as KcpPassword).Password.ReadUtf8() ?? null;
+                    m_passwordBytes = (kpf.CompositeKey.GetUserKey(typeof(KcpPassword)) as KcpPassword).Password.ReadUtf8() ?? null;
 
                     byte[] aes256Key = Util.PBKDF2Sha256GetBytes(kExportKeyLength, m_passwordBytes, salt, kKeyDerivationRoundForExport);
                     byte[] iv = new byte[kExportIVLength];
@@ -175,6 +176,12 @@ namespace KeeToReady
 
                     string strValue = f.stringValue;        // TODO: Handle protected sensitive fields.
 
+                    if (m_format == RsrzFormat.EncryptedJsonWithoutCompression && f.isSensitive != 0)
+                    {
+                        // Decrypt using XOR key
+                        strValue = CipherHexToString(m_passwordBytes, f.stringValue, kSensitiveProtectionRoundForExport);
+                    }
+
                     switch (f.type)
                     {
                         case (int)FieldType.Username:
@@ -200,6 +207,36 @@ namespace KeeToReady
                 // Add the record to root
                 storageDB.RootGroup.AddEntry(pe, true);
             }
+        }
+
+        public string CipherHexToString(byte[] password, string cipherHex, long interation)
+        {
+            if (string.IsNullOrEmpty(cipherHex)) return null;
+
+            byte[] salt = MemUtil.HexStringToByteArray(cipherHex.Substring(0, kKeyXoredSaltLength * 2));
+            byte[] cipherBytes = MemUtil.HexStringToByteArray(cipherHex.Substring(kKeyXoredSaltLength * 2, cipherHex.Length - kKeyXoredSaltLength * 2));
+            if (salt.Length != kKeyXoredSaltLength || cipherBytes.Length <= 0) return null;
+
+            byte[] xorKey = Util.PBKDF2Sha256GetBytes(cipherBytes.Length, password, salt, interation);
+            byte[] xorred = new byte[xorKey.Length];
+
+            for (int i = 0; i < xorKey.Length; i++)
+            {
+                if (i < cipherBytes.Length)
+                {
+                    byte b = cipherBytes[i];
+                    b ^=  xorKey[i];
+                    xorred[i] = b;
+                }
+                else
+                {
+                    byte b = 0;
+                    b ^=  xorKey[i];
+                    xorred[i] = b;
+                }
+            }
+
+            return System.Text.Encoding.Default.GetString(xorred);
         }
     }
 }

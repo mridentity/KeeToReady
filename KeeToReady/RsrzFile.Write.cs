@@ -320,9 +320,8 @@ namespace KeeToReady
             return MemUtil.ByteArrayToHexString(salt) + MemUtil.ByteArrayToHexString(xorred);
         }
 
-
-    //http://www.dailycoding.com/posts/convert_image_to_base64_string_and_base64_string_to_image.aspx
-    public string ImageToBase64(Image image, System.Drawing.Imaging.ImageFormat format)
+        //http://www.dailycoding.com/posts/convert_image_to_base64_string_and_base64_string_to_image.aspx
+        public string ImageToBase64(Image image, System.Drawing.Imaging.ImageFormat format)
         {
             using (MemoryStream ms = new MemoryStream())
             {
