@@ -152,20 +152,42 @@ namespace KeeToReady
                 // Assign record type
                 switch (pe.ParentGroup.Name)
                 {
+                    case "App":
+                    case "Application":
+                        r.categoryType = (int)CategoryType.App;
+                        break;
                     case "Windows":
+                    case "Computer":
                         r.categoryType = (int)CategoryType.Computer;
+                        break;
+                    case "File":
+                        r.categoryType = (int)CategoryType.File;
                         break;
                     case "Network":
                         r.categoryType = (int)CategoryType.Network;
                         break;
                     case "Homebanking":
+                    case "Credit Cards":
+                        r.categoryType = (int)CategoryType.Card;
+                        break;
                     case "Internet":
+                    case "Web Logins":
                         r.categoryType = (int)CategoryType.Website;
                         break;
                     case "eMail":
+                    case "Email Accts":
                         r.categoryType = (int)CategoryType.Email;
                         break;
+                    case "Vehicle Info":
+                        r.categoryType = (int)CategoryType.Vehicle;
+                        break;
+                    case "Identification":
+                    case "Identity":
+                        r.categoryType = (int)CategoryType.Identity;
+                        break;
                     case "General":
+                    case "Combinations":
+                    case "Serial Numbers":
                     default:
                         r.categoryType = (int)CategoryType.Generic;
                         break;
@@ -175,7 +197,8 @@ namespace KeeToReady
                 try
                 {
                     r.name = pe.Strings.Get("Title").ReadString() ?? pe.Uuid.ToString();
-                    r.desc = pe.Strings.Get("Notes").ReadString();
+                    var strNotes = pe.Strings.Get("Notes").ReadString();
+                    r.desc = strNotes.Substring(0,Math.Min(64,strNotes.Length));
                 }
                 catch (NullReferenceException)
                 {
