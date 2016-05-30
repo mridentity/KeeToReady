@@ -152,39 +152,65 @@ namespace KeeToReady
                 // Assign record type
                 switch (pe.ParentGroup.Name)
                 {
-                    case "App":
-                    case "Application":
-                        r.categoryType = (int)CategoryType.App;
-                        break;
-                    case "Windows":
-                    case "Computer":
-                        r.categoryType = (int)CategoryType.Computer;
-                        break;
-                    case "File":
-                        r.categoryType = (int)CategoryType.Encryption;
-                        break;
-                    case "Network":
-                        r.categoryType = (int)CategoryType.Network;
-                        break;
-                    case "Homebanking":
-                    case "Credit Cards":
-                        r.categoryType = (int)CategoryType.Card;
-                        break;
+                    case "rsoWebsite":
                     case "Internet":
                     case "Web Logins":
                         r.categoryType = (int)CategoryType.Website;
                         break;
+                    case "rsoCard":
+                    case "Homebanking":
+                    case "Credit Cards":
+                        r.categoryType = (int)CategoryType.Card;
+                        break;
+                    case "RsoApp":
+                    case "Application":
+                        r.categoryType = (int)CategoryType.App;
+                        break;
+                    case "rsoSmartphone":
+                        r.categoryType = (int)CategoryType.Smartphone;
+                        break;
+                    case "rsoEmail":
                     case "eMail":
                     case "Email Accts":
                         r.categoryType = (int)CategoryType.Email;
                         break;
-                    case "Vehicle Info":
-                        r.categoryType = (int)CategoryType.Vehicle;
+                    case "rsoComputer":
+                    case "Windows":
+                    case "Computer":
+                        r.categoryType = (int)CategoryType.Computer;
                         break;
+                    case "rsoNetwork":
+                    case "Network":
+                    case "Network Computer":
+                        r.categoryType = (int)CategoryType.Network;
+                        break;
+                    case "rsoIdentity":
                     case "Identification":
                     case "Identity":
                         r.categoryType = (int)CategoryType.Identity;
                         break;
+                    case "rsoMembership":
+                    case "Membership":
+                    case "Member":
+                        r.categoryType = (int)CategoryType.Membership;
+                        break;
+                    case "rsoCertificate":
+                    case "Certificate":
+                        r.categoryType = (int)CategoryType.Certificate;
+                        break;
+                    case "rsoEncryption":
+                    case "File":
+                        r.categoryType = (int)CategoryType.Encryption;
+                        break;
+                    case "rsoNote":
+                    case "Note":
+                        r.categoryType = (int)CategoryType.Note;
+                        break;
+                    case "rsoVehicle":
+                    case "Vehicle Info":
+                        r.categoryType = (int)CategoryType.Vehicle;
+                        break;
+                    case "rsoGeneral":
                     case "General":
                     case "Combinations":
                     case "Serial Numbers":
