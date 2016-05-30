@@ -197,8 +197,8 @@ namespace KeeToReady
                 try
                 {
                     r.name = pe.Strings.Get("Title").ReadString() ?? pe.Uuid.ToString();
-                    var strNotes = pe.Strings.Get("Notes").ReadString();
-                    r.desc = strNotes.Substring(0,Math.Min(64,strNotes.Length));
+                    //var strNotes = pe.Strings.Get("Notes").ReadString();
+                    //r.desc = strNotes.Substring(0,Math.Min(64,strNotes.Length));
                 }
                 catch (NullReferenceException)
                 {
