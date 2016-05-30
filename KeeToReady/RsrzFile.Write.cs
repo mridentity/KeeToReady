@@ -161,7 +161,7 @@ namespace KeeToReady
                         r.categoryType = (int)CategoryType.Computer;
                         break;
                     case "File":
-                        r.categoryType = (int)CategoryType.File;
+                        r.categoryType = (int)CategoryType.Encryption;
                         break;
                     case "Network":
                         r.categoryType = (int)CategoryType.Network;

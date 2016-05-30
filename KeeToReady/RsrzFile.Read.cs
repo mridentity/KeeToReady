@@ -146,8 +146,8 @@ namespace KeeToReady
                     case (int)CategoryType.Encryption:
                         pe.IconId = PwIcon.TerminalEncrypted;
                         break;
-                    case (int)CategoryType.File:
-                        pe.IconId = PwIcon.FolderPackage;
+                    case (int)CategoryType.Membership:
+                        pe.IconId = PwIcon.Star;
                         break;
                     case (int)CategoryType.Generic:
                         pe.IconId = PwIcon.Info;
