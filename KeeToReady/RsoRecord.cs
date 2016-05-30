@@ -2,7 +2,7 @@
 {
     public enum CategoryType
     {
-        Generic = 0, Website, Card, App, Smartphone, Email, Computer, Network, Identity, Membership, Certificate, Encryption, Note, Vehicle
+        Generic = 0, Website, Card, App, Smartphone, Email, Computer, Network, Identity, Encryption, Certificate, Membership, Note, Vehicle
     }
 
     public class RsoRecord
