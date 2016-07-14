@@ -1,7 +1,7 @@
 # KeeToReady
 KeePass plugin for importing and exporting ReadySignOn records.
 
-This is a KeePass 2.x plug-in that enables record exchanges between KeePass and the ReadySignOn app.
+This is a KeePass 2.x plug-in that enables record exchanges between KeePass and the [ReadySignOn app](https://itunes.apple.com/us/app/readysignon/id1007775032?mt=8&ign-mpt=uo%3D4).
 
 To Install
 ===========
