@@ -13,4 +13,4 @@ To Build from the Source Code on Your Own
 To Run the Pre-Built Release Version
 =====================================
 1. Download the KeeToReady.plgx OR the KeeToReady.dll from https://github.com/mridentity/KeeToReady/releases
-2. Move the downloaded files to the folder where KeePass.exe is located (if opt to use the dll isntead of plgx you will need to make sure Newtonsoft.Json.dll exists on your search path as well).
+2. Move the downloaded files to the folder where KeePass.exe is located (if opt to use the dll instead of plgx you will need to make sure Newtonsoft.Json.dll exists on your search path as well).
