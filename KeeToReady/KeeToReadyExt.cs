@@ -20,7 +20,7 @@ namespace KeeToReady
 
         public override string UpdateUrl
         {
-            get { return "https://github.com/mridentity/KeeToReady/tree/master/KeeToReady/plugin.version"; }
+            get { return "https://raw.githubusercontent.com/mridentity/KeeToReady/master/KeeToReady/plugin.version"; }
         }
 
         public override bool Initialize(IPluginHost host)
