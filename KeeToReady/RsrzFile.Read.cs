@@ -1,10 +1,6 @@
-﻿using KeePass;
-using KeePass.Forms;
+﻿using KeePass.Forms;
 using KeePassLib;
-using KeePassLib.Collections;
-using KeePassLib.Cryptography;
 using KeePassLib.Cryptography.Cipher;
-using KeePassLib.Delegates;
 using KeePassLib.Interfaces;
 using KeePassLib.Keys;
 using KeePassLib.Security;
@@ -13,10 +9,8 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.IO.Compression;
-using System.Text;
 using System.Windows.Forms;
 
 namespace KeeToReady
@@ -83,9 +77,10 @@ namespace KeeToReady
                 {
                     readerStream = new GZipStream(sInput, CompressionMode.Decompress);
                 }
-                else {
+                else
+                {
                     Debug.Assert(false);
-                    throw new FormatException("RsrzFormat");
+                    throw new FormatException("Error: Unrecognized .rsrz file format.");
                 }
 
                 m_jsonReader = new JsonTextReader(new StreamReader(readerStream));
@@ -94,6 +89,10 @@ namespace KeeToReady
 
                 m_jsonReader.Close();
                 readerStream.Close();
+            }
+            catch (Exception e)
+            {
+                throw new FormatException("Import cannot be completed due to incorrect password or file format.", e);
             }
             finally
             {
@@ -126,7 +125,7 @@ namespace KeeToReady
                 if (r.desc != null) pe.Strings.Set("Notes", new ProtectedString(false, r.desc));
 
                 // Record logo
-                switch(r.categoryType)
+                switch (r.categoryType)
                 {
                     case (int)CategoryType.App:
                         pe.IconId = PwIcon.ProgramIcons;
@@ -187,6 +186,8 @@ namespace KeeToReady
                         strValue = CipherHexToString(m_passwordBytes, f.stringValue, kSensitiveProtectionRoundForExport);
                     }
 
+                    if (strValue == null) strValue = string.Empty;  // KeePass doesn't like fields with null values.
+
                     switch (f.type)
                     {
                         case (int)FieldType.Username:
@@ -233,13 +234,13 @@ namespace KeeToReady
                 if (i < cipherBytes.Length)
                 {
                     byte b = cipherBytes[i];
-                    b ^=  xorKey[i];
+                    b ^= xorKey[i];
                     xorred[i] = b;
                 }
                 else
                 {
                     byte b = 0;
-                    b ^=  xorKey[i];
+                    b ^= xorKey[i];
                     xorred[i] = b;
                 }
             }
