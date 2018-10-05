@@ -196,6 +196,51 @@ namespace KeeToReady
                         case (int)FieldType.Password:
                             ps.Set("Password", new ProtectedString(f.isSensitive != 0, strValue));
                             break;
+                        case (int)FieldType.eMailAddress:
+                            ps.Set("Email", new ProtectedString(f.isSensitive != 0, strValue));
+                            break;
+                        case (int)FieldType.AccountName:
+                            ps.Set("AccountName", new ProtectedString(f.isSensitive != 0, strValue));
+                            break;
+                        case (int)FieldType.AccountNumber:
+                            ps.Set("AccountNumber", new ProtectedString(f.isSensitive != 0, strValue));
+                            break;
+                        case (int)FieldType.CardNumber:
+                            ps.Set("CardNumber", new ProtectedString(f.isSensitive != 0, strValue));
+                            break;
+                        case (int)FieldType.SSN:
+                            ps.Set("SSN", new ProtectedString(f.isSensitive != 0, strValue));
+                            break;
+                        case (int)FieldType.ComputerName:
+                            ps.Set("ComputerName", new ProtectedString(f.isSensitive != 0, strValue));
+                            break;
+                        case (int)FieldType.NetworkDomain:
+                            ps.Set("NetworkDomain", new ProtectedString(f.isSensitive != 0, strValue));
+                            break;
+                        case (int)FieldType.ServerHost:
+                            ps.Set("ServerHost", new ProtectedString(f.isSensitive != 0, strValue));
+                            break;
+                        case (int)FieldType.IPAddress:
+                            ps.Set("IPAddress", new ProtectedString(f.isSensitive != 0, strValue));
+                            break;
+                        case (int)FieldType.PostalAddress:
+                            ps.Set("PostalAddress", new ProtectedString(f.isSensitive != 0, strValue));
+                            break;
+                        case (int)FieldType.PhoneNumber:
+                            ps.Set("PhoneNumber", new ProtectedString(f.isSensitive != 0, strValue));
+                            break;
+                        case (int)FieldType.PassportNumber:
+                            ps.Set("PassportNumber", new ProtectedString(f.isSensitive != 0, strValue));
+                            break;
+                        case (int)FieldType.ReadyIdPublicKey:
+                            ps.Set("ReadyIdPublicKey", new ProtectedString(f.isSensitive != 0, strValue));
+                            break;
+                        case (int)FieldType.ReadyIdPrivateKey:
+                            ps.Set("ReadyIdPrivateKey", new ProtectedString(f.isSensitive != 0, strValue));
+                            break;
+                        case (int)FieldType.BundleID:
+                            ps.Set("BundleID", new ProtectedString(f.isSensitive != 0, strValue));
+                            break;
                         case (int)FieldType.WebsiteURL:
                             ps.Set("URL", new ProtectedString(f.isSensitive != 0, strValue));
                             break;

@@ -271,6 +271,51 @@ namespace KeeToReady
                         case "Password":
                             f.type = (int)FieldType.Password;
                             break;
+                        case "Email":
+                            f.type = (int)FieldType.eMailAddress;
+                            break;
+                        case "AccountName":
+                            f.type = (int)FieldType.AccountName;
+                            break;
+                        case "AccountNumber":
+                            f.type = (int)FieldType.AccountNumber;
+                            break;
+                        case "CardNumber":
+                            f.type = (int)FieldType.CardNumber;
+                            break;
+                        case "SSN":
+                            f.type = (int)FieldType.SSN;
+                            break;
+                        case "ComputerName":
+                            f.type = (int)FieldType.ComputerName;
+                            break;
+                        case "NetworkDomain":
+                            f.type = (int)FieldType.NetworkDomain;
+                            break;
+                        case "ServerHost":
+                            f.type = (int)FieldType.ServerHost;
+                            break;
+                        case "IPAddress":
+                            f.type = (int)FieldType.IPAddress;
+                            break;
+                        case "PostalAddress":
+                            f.type = (int)FieldType.PostalAddress;
+                            break;
+                        case "PhoneNumber":
+                            f.type = (int)FieldType.PhoneNumber;
+                            break;
+                        case "PassportNumber":
+                            f.type = (int)FieldType.PassportNumber;
+                            break;
+                        case "ReadyIdPublicKey":
+                            f.type = (int)FieldType.ReadyIdPublicKey;
+                            break;
+                        case "ReadyIdPrivateKey":
+                            f.type = (int)FieldType.ReadyIdPrivateKey;
+                            break;
+                        case "BundleID":
+                            f.type = (int)FieldType.BundleID;
+                            break;
                         case "URL":
                             f.type = (int)FieldType.WebsiteURL;
                             break;
