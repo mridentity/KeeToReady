@@ -1,4 +1,6 @@
-﻿using KeePass.Forms;
+﻿using KeePass;
+using KeePass.Forms;
+using KeePass.UI;
 using KeePassLib;
 using KeePassLib.Cryptography.Cipher;
 using KeePassLib.Interfaces;
@@ -98,6 +100,13 @@ namespace KeeToReady
             {
                 CommonCleanUpRead(sInput);
             }
+
+            MainForm mf = Program.MainForm;
+            if (mf != null)
+            {
+                mf.UpdateUI(false, null, false, pwStorage.RootGroup, true, pwStorage.RootGroup, true);
+                mf.Update();
+            }
         }
 
         public void CommonCleanUpRead(Stream sInput)
@@ -122,7 +131,7 @@ namespace KeeToReady
 
                 // Basic record info
                 if (r.name != null) pe.Strings.Set("Title", new ProtectedString(false, r.name));
-                if (r.desc != null) pe.Strings.Set("Notes", new ProtectedString(false, r.desc));
+                if (r.desc != null) pe.Strings.Set("Desc", new ProtectedString(false, r.desc));
 
                 // Record logo
                 if (r.logoImage != null)

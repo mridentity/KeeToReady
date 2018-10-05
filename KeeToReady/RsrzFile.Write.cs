@@ -54,7 +54,7 @@ namespace KeeToReady
 
                     hashedStream.Write(magicHeader, 0, kMagicHeaderLength);  // Prepend the magic header at the beginning of the file.
 
-                    hashedStream.Write(salt, 0, salt.Length);              
+                    hashedStream.Write(salt, 0, salt.Length);
 
                     bool bPassword = m_pwDatabase.MasterKey.ContainsType(typeof(KcpPassword));
                     bool bKeyFile = m_pwDatabase.MasterKey.ContainsType(typeof(KcpKeyFile));
@@ -74,7 +74,7 @@ namespace KeeToReady
                     byte[] iv = new byte[kExportIVLength];
 
                     for (int i = 0; i < kExportIVLength; i++) iv[i] = salt[i];
-                    
+
                     writerStream = aesEngine.EncryptStream(hashedStream, aes256Key, iv);
 
                     // TODO: wipe clean all memory used thus far.
@@ -223,8 +223,7 @@ namespace KeeToReady
                 try
                 {
                     r.name = pe.Strings.Get("Title").ReadString() ?? pe.Uuid.ToString();
-                    //var strNotes = pe.Strings.Get("Notes").ReadString();
-                    //r.desc = strNotes.Substring(0,Math.Min(64,strNotes.Length));
+                    r.desc = pe.Strings.Get("Desc").ReadString();
                 }
                 catch (NullReferenceException)
                 {
@@ -244,13 +243,13 @@ namespace KeeToReady
                     {
                         r.logoImage = ImageToBase64(img, System.Drawing.Imaging.ImageFormat.Png);
                     }
-                } 
+                }
 
                 r.asTempalte = r.isTemplate = 0;
                 r.cloudID = null;
 
                 // Record timestamp
-                r.lastUpdated = Util.ToAbsoluteReference2001( pe.LastModificationTime);
+                r.lastUpdated = Util.ToAbsoluteReference2001(pe.LastModificationTime);
 
                 // Export record fields
                 List<RsoField> fields = new List<RsoField>();
@@ -399,13 +398,13 @@ namespace KeeToReady
                 if (i < plainText.Length)
                 {
                     byte b = plainText[i];
-                    b ^=  xorKey[i];
+                    b ^= xorKey[i];
                     xorred[i] = b;
                 }
                 else
                 {
                     byte b = 0;
-                    b ^=  xorKey[i];
+                    b ^= xorKey[i];
                     xorred[i] = b;
                 }
             }
