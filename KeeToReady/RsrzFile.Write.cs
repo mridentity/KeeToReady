@@ -231,21 +231,20 @@ namespace KeeToReady
                     // Swallow exceptions that null.ReadString() may throw. 
                 }
 
-                // Assign record logo
-                if (pe.CustomIconUuid.Equals(PwUuid.Zero))
-                    r.logoImage = null;
-                else
+                if (!pe.CustomIconUuid.Equals(PwUuid.Zero))
+                {
                     r.logoImage = ImageToBase64(m_pwDatabase.GetCustomIcon(pe.CustomIconUuid, 100, 100), System.Drawing.Imaging.ImageFormat.Png);
+                }
 
                 if (r.logoImage == null)
                 {
                     ImageList.ImageCollection icons = Program.MainForm.ClientIcons.Images;
-                    Image img = new Bitmap(icons[(int)pe.IconId]);
+                    Image img = new Bitmap(icons[(int)PwIcon.Info]);
                     if (img != null)
                     {
                         r.logoImage = ImageToBase64(img, System.Drawing.Imaging.ImageFormat.Png);
                     }
-                }
+                } 
 
                 r.asTempalte = r.isTemplate = 0;
                 r.cloudID = null;

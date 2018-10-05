@@ -125,53 +125,11 @@ namespace KeeToReady
                 if (r.desc != null) pe.Strings.Set("Notes", new ProtectedString(false, r.desc));
 
                 // Record logo
-                switch (r.categoryType)
+                if (r.logoImage != null)
                 {
-                    case (int)CategoryType.App:
-                        pe.IconId = PwIcon.ProgramIcons;
-                        break;
-                    case (int)CategoryType.Card:
-                        pe.IconId = PwIcon.Homebanking;
-                        break;
-                    case (int)CategoryType.Certificate:
-                        pe.IconId = PwIcon.Certificate;
-                        break;
-                    case (int)CategoryType.Computer:
-                        pe.IconId = PwIcon.WorldComputer;
-                        break;
-                    case (int)CategoryType.Email:
-                        pe.IconId = PwIcon.EMail;
-                        break;
-                    case (int)CategoryType.Encryption:
-                        pe.IconId = PwIcon.TerminalEncrypted;
-                        break;
-                    case (int)CategoryType.Membership:
-                        pe.IconId = PwIcon.Star;
-                        break;
-                    case (int)CategoryType.Generic:
-                        pe.IconId = PwIcon.Info;
-                        break;
-                    case (int)CategoryType.Identity:
-                        pe.IconId = PwIcon.Identity;
-                        break;
-                    case (int)CategoryType.Network:
-                        pe.IconId = PwIcon.WorldSocket;
-                        break;
-                    case (int)CategoryType.Note:
-                        pe.IconId = PwIcon.Note;
-                        break;
-                    case (int)CategoryType.Smartphone:
-                        pe.IconId = PwIcon.BlackBerry;
-                        break;
-                    case (int)CategoryType.Vehicle:
-                        pe.IconId = PwIcon.Info;
-                        break;
-                    case (int)CategoryType.Website:
-                        pe.IconId = PwIcon.WorldComputer;
-                        break;
-                    default:
-                        pe.IconId = PwIcon.Info;
-                        break;
+                    PwCustomIcon pwci = new PwCustomIcon(new PwUuid(true), Convert.FromBase64String(r.logoImage));
+                    m_pwDatabase.CustomIcons.Add(pwci);
+                    pe.CustomIconUuid = pwci.Uuid;
                 }
 
                 foreach (RsoField f in r.fields)
