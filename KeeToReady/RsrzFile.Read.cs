@@ -104,8 +104,7 @@ namespace KeeToReady
             MainForm mf = Program.MainForm;
             if (mf != null)
             {
-                mf.UpdateUI(false, null, false, pwStorage.RootGroup, true, pwStorage.RootGroup, true);
-                mf.Update();
+                mf.UpdateUI(false, null, pwStorage.UINeedsIconUpdate, null, true, pwStorage.RootGroup, true);
             }
         }
 
@@ -131,7 +130,7 @@ namespace KeeToReady
 
                 // Basic record info
                 if (r.name != null) pe.Strings.Set("Title", new ProtectedString(false, r.name));
-                if (r.desc != null) pe.Strings.Set("Desc", new ProtectedString(false, r.desc));
+                if (r.desc != null) pe.Strings.Set("Description", new ProtectedString(false, r.desc));
 
                 // Record logo
                 if (r.logoImage != null)
@@ -139,6 +138,9 @@ namespace KeeToReady
                     PwCustomIcon pwci = new PwCustomIcon(new PwUuid(true), Convert.FromBase64String(r.logoImage));
                     m_pwDatabase.CustomIcons.Add(pwci);
                     pe.CustomIconUuid = pwci.Uuid;
+                    pe.Touch(true, true);
+                    m_pwDatabase.UINeedsIconUpdate = true;
+                    m_pwDatabase.Modified = true;
                 }
 
                 foreach (RsoField f in r.fields)

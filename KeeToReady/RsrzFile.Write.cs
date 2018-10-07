@@ -223,7 +223,7 @@ namespace KeeToReady
                 try
                 {
                     r.name = pe.Strings.Get("Title").ReadString() ?? pe.Uuid.ToString();
-                    r.desc = pe.Strings.Get("Desc").ReadString();
+                    r.desc = pe.Strings.Get("Description").ReadString();
                 }
                 catch (NullReferenceException)
                 {
