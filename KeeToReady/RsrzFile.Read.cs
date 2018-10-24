@@ -147,7 +147,7 @@ namespace KeeToReady
                 {
                     var ps = pe.Strings;
 
-                    string strValue = f.stringValue;        // TODO: Handle protected sensitive fields.
+                    string strValue = f.stringValue;
 
                     if (m_format == RsrzFormat.EncryptedJsonWithoutCompression && f.isSensitive != 0)
                     {
@@ -156,6 +156,9 @@ namespace KeeToReady
                     }
 
                     if (strValue == null) strValue = string.Empty;  // KeePass doesn't like fields with null values.
+
+                    // TODO: Need to add logic to handle multiple fields of the same type which is allowed by ReadySignOn but not by KeePass.
+                    // Current implementation will use the last field of a given field type for the corresponding field in KeePass.
 
                     switch (f.type)
                     {
